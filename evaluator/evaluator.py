@@ -147,6 +147,8 @@ class Evaluator():
     self.train_df = train_df
     if self.model_name == 'cat':
       self.fit_params = {'silent': True}
+    else:
+      self.fit_params = {}
 
   def drop_col(self, df, col_list=["index", "country"]):
     return df.drop(col_list, axis=1)
