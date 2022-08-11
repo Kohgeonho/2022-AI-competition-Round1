@@ -1,5 +1,8 @@
 ## Note
 - evaluator를 수정한 뒤에는 test code 돌려보기
+```python
+!python evaluator/test.py
+```
 - evaluator를 변경할 때에는 branch 생성 -> PR 생성 -> Merge 순서로 작업 진행하기 ([링크](https://www.notion.so/simya/Github-Policy-82fc68ae4b38425486d4cb3334dbb77c))
 - 변경 내용 Notion 및 현재 문서에 업데이트 하기
 
