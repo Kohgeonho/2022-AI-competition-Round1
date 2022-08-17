@@ -122,7 +122,7 @@ class MyModel(Model):
     super().__init__(*args, **kwargs)
 
   def optimize(self, initial_params, **kwargs):
-    self.optimizer = Optimizer(
+    self.optimizer = MyOptimizer(
         self.train_df, 
         initial_params, 
         self.model_name,
