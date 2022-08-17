@@ -260,12 +260,12 @@ class Evaluator():
     self.train_df = self.train_df.reset_index()
     self.train_df = self.train_df.drop(["index"], axis=1)
 
-    for i in range(n_runs):
+    for _ in range(n_runs):
       result_df = self.evaluate(**kwargs)
-      result_metric = result_df['roc_auc']['mean']
+      result_metric = result_df[metric]['mean']
 
       if best_result is None or \
-        best_result['roc_auc']['mean'] < result_metric:
+        best_result[metric]['mean'] < result_metric:
           best_model = self.model
           best_result = result_df
 
