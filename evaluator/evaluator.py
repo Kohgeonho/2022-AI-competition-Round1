@@ -100,7 +100,7 @@ class Optimizer():
       elif dtype == "log":
         self.params[param] = trial.suggest_loguniform(param, *value)
       elif dtype == "categorical":
-        self.params[param] = trial.suggest_categorical(param, *value)
+        self.params[param] = trial.suggest_categorical(param, value)
       else:
         raise NameError("dtype must be one of ('static', 'int', 'float', 'log', 'categorical')")
 
@@ -212,11 +212,14 @@ class Evaluator():
       y_train, y_test = train_y.loc[train_index], train_y.loc[val_index]
 
       self.model.fit(X_train, y_train, **self.fit_params)
-      predictions = self.model.predict(X_test)
+      if self.model_type == 'rgr':
+        predictions = self.model.predict(X_test)
+      else:
+        predictions = self.model.predict_proba(X_test)[:,1]
 
       row = {}
       for metric in metrics:
-        if self.model_type == "rgr" and metric in class_metrics:
+        if metric in class_metrics:
           score = metrics_functions_map[metric](
               y_test,
               np.round(predictions)
@@ -234,11 +237,11 @@ class Evaluator():
     ## add training accuracy
     mean = result_df.mean(axis=0)
     self.model.fit(train_x, train_y, **self.fit_params)
-    predictions = self.model.predict(train_x)
-    if self.model_type == "rgr":
-      mean["train_acc"] = accuracy_score(np.round(predictions), train_y)
+    if self.model_type == 'rgr':
+      predictions = self.model.predict(train_x)
     else:
-      mean["train_acc"] = accuracy_score(predictions, train_y)
+      predictions = self.model.predict_proba(train_x)[:,1]
+    mean["train_acc"] = accuracy_score(np.round(predictions), train_y)
     result_df.loc["mean"] = mean
 
     return result_df
@@ -259,6 +262,9 @@ class Evaluator():
     test_df = imp.transform(test_df)
 
     
-    preds = self.model.predict(test_df)
+    if self.model_type == 'rgr':
+      preds = self.model.predict(test_df)
+    else:
+      preds = self.model.predict_proba(test_df)[:,1]
     submission_df["nerdiness"] = preds
     return submission_df
