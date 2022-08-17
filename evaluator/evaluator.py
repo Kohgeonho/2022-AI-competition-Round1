@@ -221,7 +221,7 @@ class Evaluator():
         if metric in class_metrics:
           score = metrics_functions_map[metric](
               y_test,
-              np.round(predictions)
+              np.array(predictions) > 0.5,
           )
         else:
           score = metrics_functions_map[metric](y_test, predictions)
@@ -240,7 +240,10 @@ class Evaluator():
       predictions = self.model.predict(train_x)
     else:
       predictions = self.model.predict_proba(train_x)[:,1]
-    mean["train_acc"] = accuracy_score(np.round(predictions), train_y)
+    mean["train_acc"] = accuracy_score(
+      np.array(predictions) > 0.5, 
+      train_y,
+    )
     result_df.loc["mean"] = mean
 
     return result_df
