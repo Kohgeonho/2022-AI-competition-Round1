@@ -124,9 +124,9 @@ class Optimizer():
     self.opt.optimize(self.objective, n_trials=n_trials)
 
   def analyze(self):
-    optuna.visualization.plot_param_importances(self.opt)
-    optuna.visualization.plot_optimization_history(self.opt)
-    optuna.visualization.plot_slice(self.opt)
+    optuna.visualization.plot_optimization_history(self.opt).show()
+    optuna.visualization.plot_param_importances(self.opt).show()
+    optuna.visualization.plot_slice(self.opt).show()
 
   def best_params(self):
     print(self.opt.best_trial.value)
