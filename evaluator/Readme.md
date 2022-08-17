@@ -106,3 +106,6 @@ submission_df.to_csv("submission/2022-08-05_LGBM_optim_200.csv", index=False)
 ### Version 0.3
 - Version 0.3 Github에 업로드 (2022.08.10)
 - [Hotfix] catboost 이외의 모델에 에러 발생하던 것 수정(2022.08.11) [[PR Link](https://github.com/Kohgeonho/2022-AI-competition-Round1/pull/1)]
+
+### Version 0.4
+- CLF model이 0과 1의 label이 아닌 probability score를 반환하도록 변경(2022.08.15) [[PR Link](https://github.com/Kohgeonho/2022-AI-competition-Round1/pull/3)]
