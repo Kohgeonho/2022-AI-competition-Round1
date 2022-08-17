@@ -119,7 +119,7 @@ submission_df.to_csv("submission/2022-08-05_LGBM_optim_200.csv", index=False)
 ### A
 Evaluator Update할 때 사용하면 좋을 template
 ```python
-from evaluator.evaulator import Model, Evaluator, Optimizer
+from evaluator.evaluator import Model, Evaluator, Optimizer
 
 class MyEvaluator(Evaluator):
   def __init__(self, *args, **kwargs):
