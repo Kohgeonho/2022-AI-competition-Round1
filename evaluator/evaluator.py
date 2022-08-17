@@ -111,12 +111,13 @@ class Optimizer():
 
     return result_df["roc_auc"]["mean"]
 
-  def optimize(self, n_trials=100, sampling="TPE"):
+  def optimize(self, n_trials=100, n_runs=1, sampling="TPE"):
     if sampling == "random":
       sampler = optuna.samplers.RandomSampler(seed=self.random_seed)
     elif sampling == "TPE":
       sampler = optuna.samplers.TPESampler()
 
+    self.n_runs = n_runs
     self.opt = optuna.create_study(
         direction='maximize',
         sampler=sampler,
@@ -178,9 +179,6 @@ class Evaluator():
       return self.drop_col(df, col_list=["index"])
 
   def evaluate(self, metrics="all", train_acc=True):
-    total_err = 0
-    total_score = 0
-
     train_x=self.train_df.drop(['nerdiness'], axis=1)
     train_y=self.train_df['nerdiness']
 
@@ -253,6 +251,30 @@ class Evaluator():
     self.train_df = self.train_df.drop(["index"], axis=1)
     return self.evaluate(**kwargs)
 
+  def train_best_model(self, n_runs=10, metric='roc_auc', threshold=None, **kwargs):
+    best_model = None
+    best_result = None
+
+    self.train_df = self.preprocess(self.train_df)
+    self.train_df = self.train_df.dropna()
+    self.train_df = self.train_df.reset_index()
+    self.train_df = self.train_df.drop(["index"], axis=1)
+
+    for i in range(n_runs):
+      result_df = self.evaluate(**kwargs)
+      result_metric = result_df['roc_auc']['mean']
+
+      if best_result is None or \
+        best_result['roc_auc']['mean'] < result_metric:
+          best_model = self.model
+          best_result = result_df
+
+      if threshold is not None and result_metric > threshold:
+        break
+
+    self.model = best_model
+    return best_result
+
   def make_submission(self, test_df, submission_df):
     test_df = self.preprocess(test_df)
 
@@ -260,7 +282,6 @@ class Evaluator():
     imp = SimpleImputer(missing_values=np.nan, strategy='most_frequent')
     imp = imp.fit(test_df)
     test_df = imp.transform(test_df)
-
     
     if self.model_type == 'rgr':
       preds = self.model.predict(test_df)
