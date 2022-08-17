@@ -121,6 +121,16 @@ class MyModel(Model):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
 
+  def optimize(self, initial_params, **kwargs):
+    self.optimizer = Optimizer(
+        self.train_df, 
+        initial_params, 
+        self.model_name,
+        self.model_type,
+    )
+    best_params = self.optimizer.run(**kwargs)
+    self.__init__(self.train_df, self.model_name, self.model_type, **best_params)
+
 class MyOptimizer(Optimizer):
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
