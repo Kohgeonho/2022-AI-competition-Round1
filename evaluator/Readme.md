@@ -107,6 +107,14 @@ submission_df.to_csv("submission/2022-08-05_LGBM_optim_200.csv", index=False)
 - Version 0.3 Github에 업로드 (2022.08.10)
 - [Hotfix] catboost 이외의 모델에 에러 발생하던 것 수정(2022.08.11) [[PR Link](https://github.com/Kohgeonho/2022-AI-competition-Round1/pull/1)]
 
+### Version 0.4
+- CLF model이 0과 1의 label이 아닌 probability score를 반환하도록 변경(2022.08.15) [[PR Link](https://github.com/Kohgeonho/2022-AI-competition-Round1/pull/3)]
+
+### Version 0.5
+- Optimize 기능 개선 (2022.08.17) [[PR Link](https://github.com/Kohgeonho/2022-AI-competition-Round1/pull/4)]
+   - Optimize 후에 분석 결과 출력하는 부분 정상화
+   - RF, ET와 같은 모델들을 위해 여러번 시도해서 가장 score가 높은 모델을 저장하는 함수 추가
+
 ## Appendix
 ### A
 Evaluator Update할 때 사용하면 좋을 template
