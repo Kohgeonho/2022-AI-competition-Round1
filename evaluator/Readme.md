@@ -106,3 +106,48 @@ submission_df.to_csv("submission/2022-08-05_LGBM_optim_200.csv", index=False)
 ### Version 0.3
 - Version 0.3 Github에 업로드 (2022.08.10)
 - [Hotfix] catboost 이외의 모델에 에러 발생하던 것 수정(2022.08.11) [[PR Link](https://github.com/Kohgeonho/2022-AI-competition-Round1/pull/1)]
+
+## Appendix
+### A
+Evaluator Update할 때 사용하면 좋을 template
+```python
+class MyEvaluator(Evaluator):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+
+class MyModel(Model):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+
+class MyOptimizer(Optimizer):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+
+  def objective(self, trial):
+    ## Tuning Parmeters
+    for param, dtype, value in self.initial_params:
+      if dtype == "static":
+        self.params[param] = value
+      elif dtype == "int":
+        self.params[param] = trial.suggest_int(param, *value)
+      elif dtype == "float":
+        self.params[param] = trial.suggest_uniform(param, *value)
+      elif dtype == "log":
+        self.params[param] = trial.suggest_loguniform(param, *value)
+      elif dtype == "categorical":
+        self.params[param] = trial.suggest_categorical(param, value)
+      else:
+        raise NameError("dtype must be one of ('static', 'int', 'float', 'log', 'categorical')")
+
+    ## Objective Metric
+    result_df = MyEvaluator(
+        **MyModel(self.train_df, self.model_name, self.model_type, **self.params).get_model()
+    ).run(train_acc=False)
+
+    return result_df["roc_auc"]["mean"]
+```
+```python
+MyEvaluator(
+    **MyModel(train_df, "lgbm", "clf").get_model()
+).run()
+```
