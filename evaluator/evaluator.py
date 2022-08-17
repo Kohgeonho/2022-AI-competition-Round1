@@ -7,7 +7,6 @@ from sklearn.metrics import (
     roc_auc_score,
     mean_absolute_error,
 )
-from collections import defaultdict
 import pandas as pd
 import numpy as np
 # from tqdm.notebook import tqdm
@@ -256,8 +255,10 @@ class Evaluator():
     # handle nan values
     imp = SimpleImputer(missing_values=np.nan, strategy='most_frequent')
     imp = imp.fit(test_df)
-    test_df = imp.transform(test_df)
-
+    test_df = pd.DataFrame(
+      imp.transform(test_df),
+      columns=test_df.columns
+    )
     
     preds = self.model.predict(test_df)
     submission_df["nerdiness"] = preds
