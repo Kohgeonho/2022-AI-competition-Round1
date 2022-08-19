@@ -109,3 +109,65 @@ submission_df.to_csv("submission/2022-08-05_LGBM_optim_200.csv", index=False)
 
 ### Version 0.4
 - CLF model이 0과 1의 label이 아닌 probability score를 반환하도록 변경(2022.08.15) [[PR Link](https://github.com/Kohgeonho/2022-AI-competition-Round1/pull/3)]
+
+### Version 0.5
+- Optimize 기능 개선 (2022.08.17) [[PR Link](https://github.com/Kohgeonho/2022-AI-competition-Round1/pull/4)]
+   - Optimize 후에 분석 결과 출력하는 부분 정상화
+   - RF, ET와 같은 모델들을 위해 여러번 시도해서 가장 score가 높은 모델을 저장하는 함수 추가
+
+## Appendix
+### A
+Evaluator Update할 때 사용하면 좋을 template
+```python
+from evaluator.evaluator import Model, Evaluator, Optimizer
+
+class MyEvaluator(Evaluator):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+
+class MyModel(Model):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+
+  def optimize(self, initial_params, **kwargs):
+    self.optimizer = MyOptimizer(
+        self.train_df, 
+        initial_params, 
+        self.model_name,
+        self.model_type,
+    )
+    best_params = self.optimizer.run(**kwargs)
+    self.__init__(self.train_df, self.model_name, self.model_type, **best_params)
+
+class MyOptimizer(Optimizer):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+
+  def objective(self, trial):
+    ## Tuning Parmeters
+    for param, dtype, value in self.initial_params:
+      if dtype == "static":
+        self.params[param] = value
+      elif dtype == "int":
+        self.params[param] = trial.suggest_int(param, *value)
+      elif dtype == "float":
+        self.params[param] = trial.suggest_uniform(param, *value)
+      elif dtype == "log":
+        self.params[param] = trial.suggest_loguniform(param, *value)
+      elif dtype == "categorical":
+        self.params[param] = trial.suggest_categorical(param, value)
+      else:
+        raise NameError("dtype must be one of ('static', 'int', 'float', 'log', 'categorical')")
+
+    ## Objective Metric
+    result_df = MyEvaluator(
+        **MyModel(self.train_df, self.model_name, self.model_type, **self.params).get_model()
+    ).run(train_acc=False)
+
+    return result_df["roc_auc"]["mean"]
+```
+```python
+MyEvaluator(
+    **MyModel(train_df, "lgbm", "clf").get_model()
+).run()
+```
