@@ -9,7 +9,7 @@ from sklearn.metrics import (
 )
 import pandas as pd
 import numpy as np
-# from tqdm.notebook import tqdm
+from sklearn.utils import validation
 
 from xgboost import XGBClassifier, XGBRegressor
 from lightgbm import LGBMClassifier, LGBMRegressor
@@ -166,18 +166,33 @@ class Evaluator():
       df[f"{col}_idx"] = _indexer(col)
     return self.drop_col(df, col_list)
 
-  def preprocess(self, df=None, mode="index"):
+  def preprocess(self, df=None, mode="index", fillna=False):
     assert mode in ("index", "drop")
 
     df = self.train_df if df is None else df
 
     if mode == "drop":
-      return self.drop_col(df)
+      df = self.drop_col(df)
     elif mode == "index":
       df = self.index_col(df)
-      return self.drop_col(df, col_list=["index"])
+      df = self.drop_col(df, col_list=["index"])
+    
+    if fillna:
+      # handle nan values
+      imp = SimpleImputer(missing_values=np.nan, strategy='most_frequent')
+      imp = imp.fit(df)
+      df = pd.DataFrame(
+        imp.transform(df),
+        columns=df.columns
+      )
+    else:
+      df = df.dropna()
+      df = df.reset_index()
+      df = df.drop(["index"], axis=1)
 
-  def evaluate(self, metrics="all", train_acc=True):
+    return df
+
+  def evaluate(self, test_df, metrics="all"):
     train_x=self.train_df.drop(['nerdiness'], axis=1)
     train_y=self.train_df['nerdiness']
 
@@ -204,53 +219,50 @@ class Evaluator():
         columns = metrics + ["train_acc"]
     )
 
+    test_df = self.preprocess(test_df, fillna=True)
+    predictions = np.zeros(len(test_df))
+
     for i, (train_index, val_index) in enumerate(self.kf.split(train_x)):
       X_train, X_test = train_x.loc[train_index], train_x.loc[val_index]
       y_train, y_test = train_y.loc[train_index], train_y.loc[val_index]
 
       self.model.fit(X_train, y_train, **self.fit_params)
       if self.model_type == 'rgr':
-        predictions = self.model.predict(X_test)
+        validation = self.model.predict(X_test)
+        training = self.model.predict(X_train)
+        predictions += self.model.predict(test_df)
       else:
-        predictions = self.model.predict_proba(X_test)[:,1]
+        validation = self.model.predict_proba(X_test)[:,1]
+        training = self.model.predict_proba(X_train)[:,1]
+        predictions += self.model.predict_proba(test_df)[:,1]
 
       row = {}
       for metric in metrics:
         if metric in class_metrics:
           score = metrics_functions_map[metric](
               y_test,
-              np.array(predictions) > 0.5,
+              np.array(validation) > 0.5,
           )
         else:
-          score = metrics_functions_map[metric](y_test, predictions)
+          score = metrics_functions_map[metric](y_test, validation)
         row[metric] = score
+      row["train_acc"] = accuracy_score(y_train, np.array(training) > 0.5)
       result_df = result_df.append(
           row, ignore_index=True
       )
 
+    self.predictions = predictions / self.kf.n_splits
+
     result_df["fold"] = list(range(1, i+2))
     result_df = result_df.set_index("fold")
 
-    ## add training accuracy
     mean = result_df.mean(axis=0)
-    self.model.fit(train_x, train_y, **self.fit_params)
-    if self.model_type == 'rgr':
-      predictions = self.model.predict(train_x)
-    else:
-      predictions = self.model.predict_proba(train_x)[:,1]
-    mean["train_acc"] = accuracy_score(
-      np.array(predictions) > 0.5, 
-      train_y,
-    )
     result_df.loc["mean"] = mean
 
     return result_df
 
   def run(self, **kwargs):
     self.train_df = self.preprocess(self.train_df)
-    self.train_df = self.train_df.dropna()
-    self.train_df = self.train_df.reset_index()
-    self.train_df = self.train_df.drop(["index"], axis=1)
     return self.evaluate(**kwargs)
 
   def train_best_model(self, n_runs=10, metric='roc_auc', threshold=None, **kwargs):
@@ -258,9 +270,6 @@ class Evaluator():
     best_result = None
 
     self.train_df = self.preprocess(self.train_df)
-    self.train_df = self.train_df.dropna()
-    self.train_df = self.train_df.reset_index()
-    self.train_df = self.train_df.drop(["index"], axis=1)
 
     for _ in range(n_runs):
       result_df = self.evaluate(**kwargs)
@@ -278,19 +287,5 @@ class Evaluator():
     return best_result
 
   def make_submission(self, test_df, submission_df):
-    test_df = self.preprocess(test_df)
-
-    # handle nan values
-    imp = SimpleImputer(missing_values=np.nan, strategy='most_frequent')
-    imp = imp.fit(test_df)
-    test_df = pd.DataFrame(
-      imp.transform(test_df),
-      columns=test_df.columns
-    )
-    
-    if self.model_type == 'rgr':
-      preds = self.model.predict(test_df)
-    else:
-      preds = self.model.predict_proba(test_df)[:,1]
-    submission_df["nerdiness"] = preds
+    submission_df["nerdiness"] = self.predictions
     return submission_df
