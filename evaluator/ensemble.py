@@ -2,7 +2,7 @@ import numpy as np
 import yaml
 
 from sklearn.ensemble import VotingRegressor
-from evaluator import Model
+from evaluator.evaluator import Model
 
 class VotingModel(VotingRegressor):
   def __init__(self, model_types, estimators):
