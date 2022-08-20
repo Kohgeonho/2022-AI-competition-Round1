@@ -1,69 +1,69 @@
 lgbm:
   - name: LightGBM
-  - type: rgr
-  - best_score: 0.880712
-  - best_params: {
-    "objective": "binary",
-    'metric': 'auc', 
-    "n_estimators": 500,
-    'learning_rate': 0.026332779906149555,
-    'num_leaves': 955,
-    'reg_alpha': 6.90331310095056e-08,
-    'reg_lambda': 2.30837413695962e-06,
-    'feature_fraction': 0.4, 
-    'bagging_fraction': 0.8823839979334422, 
-    'bagging_freq': 5, 
-    'min_child_samples': 5,
-  }
+    type: rgr
+    best_score: 0.880712
+    best_params: {
+      "objective": "binary",
+      'metric': 'auc', 
+      "n_estimators": 500,
+      'learning_rate': 0.026332779906149555,
+      'num_leaves': 955,
+      'reg_alpha': 6.90331310095056e-08,
+      'reg_lambda': 2.30837413695962e-06,
+      'feature_fraction': 0.4, 
+      'bagging_fraction': 0.8823839979334422, 
+      'bagging_freq': 5, 
+      'min_child_samples': 5,
+    }
 
 xgb:
   - name: XGBoost
-  - type: rgr
-  - best_score: 0.869358
-  - best_params: {
-      "objective": "reg:squarederror",
-      "average": "micro",
-      'n_estimators': 746, 
-      'learning_rate': 0.0181863245309935, 
-      'gamma': 0, 
-      'max_depth': 11, 
-      'lambda': 1, 
-      'alpha': 4, 
-      'subsample': 0.7231465475519483
-  }
+    type: rgr
+    best_score: 0.869358
+    best_params: {
+        "objective": "reg:squarederror",
+        "average": "micro",
+        'n_estimators': 746, 
+        'learning_rate': 0.0181863245309935, 
+        'gamma': 0, 
+        'max_depth': 11, 
+        'lambda': 1, 
+        'alpha': 4, 
+        'subsample': 0.7231465475519483
+    }
 
 cat:
   - name: CatBoost
-  - type: rgr
-  - best_score: 0.86791
-  - best_params: {
-    'learning_rate': 0.01001831305173243,
-    'bagging_temperature': 5.20036760425302,
-    'n_estimators': 120, 'max_depth': 16,
-    'random_strength': 0,
-    'colsample_bylevel': 0.984260923537832,
-    'l2_leaf_reg': 1.0732827610812122e-05,
-    'min_child_samples': 100,
-    'max_bin': 302,
-    'od_type': 'Iter'
-  }
+    type: rgr
+    best_score: 0.86791
+    best_params: {
+      'learning_rate': 0.01001831305173243,
+      'bagging_temperature': 5.20036760425302,
+      'n_estimators': 120, 'max_depth': 16,
+      'random_strength': 0,
+      'colsample_bylevel': 0.984260923537832,
+      'l2_leaf_reg': 1.0732827610812122e-05,
+      'min_child_samples': 100,
+      'max_bin': 302,
+      'od_type': 'Iter'
+    }
 
 rf:
   - name: RandomForest
-  - type: clf
-  - best_score: 0.866943
-  - best_params: {
+    type: clf
+    best_score: 0.866943
+    best_params: {
     
-  }
+    }
 
 et:
   - name: ExtraTrees
-  - type: clf
-  - best_score: 0.871722
-  - best_params: {
-    'n_estimators': 292, 
-    'max_depth': 45, 
-    'min_samples_split': 2, 
-    'min_samples_leaf': 1, 
-    'max_features': 0.729627795893577
-  }
+    type: clf
+    best_score: 0.871722
+    best_params: {
+      'n_estimators': 292, 
+      'max_depth': 45, 
+      'min_samples_split': 2, 
+      'min_samples_leaf': 1, 
+      'max_features': 0.729627795893577
+    }
