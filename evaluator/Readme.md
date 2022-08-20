@@ -96,6 +96,20 @@ Evaluator(
 ).run()
 ```
 
+### Ensemble Model
+
+#### Update [best_models_config.yaml](best_models_config.yaml)
+- 각 모델별로 best optimization을 update 해준다
+- version, best_score 등도 같이 적어주면 관리하기 편함
+
+#### Run Ensemble Model
+```python
+evaluator = Evaluator(
+    **EnsembleModel(train_df, models=['lgbm', 'xgb', 'et', 'rf']).get_model()
+)
+evaluator.run()
+```
+
 ### Create Submission File
 ```python
 submission_df = evaluator.make_submission(test_df, submission_df)
