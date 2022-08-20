@@ -1,5 +1,5 @@
 lgbm:
-  - name: LightGBM
+  - name: LGBM-rgr-opt-v0.4
     type: rgr
     best_score: 0.880712
     best_params: {
@@ -17,7 +17,7 @@ lgbm:
     }
 
 xgb:
-  - name: XGBoost
+  - name: XGB-rgr-opt-v0.1
     type: rgr
     best_score: 0.869358
     best_params: {
@@ -33,7 +33,7 @@ xgb:
     }
 
 cat:
-  - name: CatBoost
+  - name: CAT-clf-proba-opt-v0.1
     type: rgr
     best_score: 0.86791
     best_params: {
@@ -49,7 +49,7 @@ cat:
     }
 
 rf:
-  - name: RandomForest
+  - name: RF-clf-proba-base
     type: clf
     best_score: 0.866943
     best_params: {
@@ -57,7 +57,7 @@ rf:
     }
 
 et:
-  - name: ExtraTrees
+  - name: ET-clf-proba-opt-v0.1
     type: clf
     best_score: 0.871722
     best_params: {
