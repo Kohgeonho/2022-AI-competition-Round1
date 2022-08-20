@@ -32,6 +32,7 @@ os.listdir()
 ### Module Import (with Data)
 ```python
 from evaluator.evaluator import Evaluator, Model
+from evaluator.ensemble import EnsembleModel
 
 train_df = pd.read_csv('competition_data/train.csv')
 test_df = pd.read_csv("competition_data/test.csv")
@@ -104,6 +105,8 @@ Evaluator(
 
 #### Run Ensemble Model
 ```python
+from evaluator.ensemble import EnsembleModel
+
 evaluator = Evaluator(
     **EnsembleModel(train_df, models=['lgbm', 'xgb', 'et', 'rf']).get_model()
 )
@@ -123,3 +126,6 @@ submission_df.to_csv("submission/2022-08-05_LGBM_optim_200.csv", index=False)
 
 ### Version 0.4
 - CLF model이 0과 1의 label이 아닌 probability score를 반환하도록 변경(2022.08.15) [[PR Link](https://github.com/Kohgeonho/2022-AI-competition-Round1/pull/3)]
+
+### Version 0.6
+- best_models_config.yaml의 정보를 이용한 Ensemble 모델을 학습하는 EnsembleModel 모듈 추가(2022.08.20) [[PR Link](https://github.com/Kohgeonho/2022-AI-competition-Round1/pull/7)]
