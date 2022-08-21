@@ -32,6 +32,7 @@ os.listdir()
 ### Module Import (with Data)
 ```python
 from evaluator.evaluator import Evaluator, Model
+from evaluator.ensemble import EnsembleModel
 
 train_df = pd.read_csv('competition_data/train.csv')
 test_df = pd.read_csv("competition_data/test.csv")
@@ -96,6 +97,22 @@ Evaluator(
 ).run()
 ```
 
+### Ensemble Model
+
+#### Update [best_models_config.yaml](best_models_config.yaml)
+- 각 모델별로 best optimization을 update 해준다
+- version, best_score 등도 같이 적어주면 관리하기 편함
+
+#### Run Ensemble Model
+```python
+from evaluator.ensemble import EnsembleModel
+
+evaluator = Evaluator(
+    **EnsembleModel(train_df, models=['lgbm', 'xgb', 'et', 'rf']).get_model()
+)
+evaluator.run()
+```
+
 ### Create Submission File
 ```python
 submission_df = evaluator.make_submission(test_df, submission_df)
@@ -114,6 +131,9 @@ submission_df.to_csv("submission/2022-08-05_LGBM_optim_200.csv", index=False)
 - Optimize 기능 개선 (2022.08.17) [[PR Link](https://github.com/Kohgeonho/2022-AI-competition-Round1/pull/4)]
    - Optimize 후에 분석 결과 출력하는 부분 정상화
    - RF, ET와 같은 모델들을 위해 여러번 시도해서 가장 score가 높은 모델을 저장하는 함수 추가
+
+### Version 0.6
+- best_models_config.yaml의 정보를 이용한 Ensemble 모델을 학습하는 EnsembleModel 모듈 추가(2022.08.20) [[PR Link](https://github.com/Kohgeonho/2022-AI-competition-Round1/pull/7)]
 
 ## Appendix
 ### A
