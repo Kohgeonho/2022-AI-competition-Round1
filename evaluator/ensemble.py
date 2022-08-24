@@ -52,15 +52,18 @@ class EnsembleModel():
     estimators = []
     model_types = []
     for model_name in models:
-        configs = model_configs[model_name][0]
-        model_type = configs["type"]
-        params = configs["best_params"]
-        
-        estimators.append((
-            model_name, 
-            Model(train_df, model_name, model_type, **params).get_model()['model']
-        ))
-        model_types.append(model_type)
+        configs = model_configs[model_name]
+
+        for config in configs:
+            model_type = config["type"]
+            params = config["best_params"]
+            name = config["name"]
+            
+            estimators.append((
+                name, 
+                Model(train_df, model_name, model_type, **params).get_model()['model']
+            ))
+            model_types.append(model_type)
 
     self.ensemble_model = VotingModel(
         estimators=estimators,
