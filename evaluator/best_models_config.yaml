@@ -75,7 +75,7 @@ rf:
     
     }
 
-  - name: RF-clf-proba-base
+  - name: RF-clf-proba-base-copy1
     type: clf
     best_score: 0.866943
     best_params: {
@@ -94,7 +94,7 @@ et:
       'max_features': 0.729627795893577
     }
 
-  - name: ET-clf-proba-opt-v0.1
+  - name: ET-clf-proba-opt-v0.1-copy1
     type: clf
     best_score: 0.871722
     best_params: {
