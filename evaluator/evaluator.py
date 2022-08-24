@@ -151,6 +151,7 @@ class Evaluator():
       self.fit_params = {}
 
   def drop_col(self, df, col_list=["index", "country"]):
+    col_list = [col for col in col_list if col in df.columns]
     return df.drop(col_list, axis=1)
 
   def index_col(self, df, col_list=["country"]):
