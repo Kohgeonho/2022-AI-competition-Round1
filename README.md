@@ -6,3 +6,9 @@ https://www.notion.so/simya/AI-Competition-309e0d2701f9435bbb198bf1f48656d1
 
 ## Module
 #### [Evaluator](https://github.com/Kohgeonho/2022-AI-competition-Round1/tree/main/evaluator)
+
+### Todo
+- [ ] preprocessing API 간소화
+- [ ] train_df, test_df preprocessing 통일
+  - [ ] train_df dropna -> imputer
+  - [ ] train_df test_df indexing 통일
